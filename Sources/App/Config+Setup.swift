@@ -25,5 +25,6 @@ extension Config {
     private func setupPreparations() throws {
       
       preparations.append(Meetup.self)
+      preparations.append(User.self)
     }
 }

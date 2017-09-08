@@ -11,6 +11,8 @@ extension Droplet {
       
       /* meetup routes */
       let mc = MeetupController()
+      let uc = UserController()
       get("meetup/upcoming", handler: mc.upcomingMeetup)
+      post("user", handler: uc.register)
     }
 }
