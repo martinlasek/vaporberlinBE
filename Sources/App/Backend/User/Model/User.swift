@@ -10,7 +10,6 @@ final class User: Model {
   var lastname: String?
   var website: String?
   var company: String?
-  var companyWebsite: String?
   
   init(
     email: String,
@@ -18,8 +17,7 @@ final class User: Model {
     firstname: String?,
     lastname: String?,
     website: String?,
-    company: String?,
-    companyWebsite: String?
+    company: String?
   ) {
     
     self.email = email
@@ -28,7 +26,6 @@ final class User: Model {
     self.lastname = lastname
     self.website = website
     self.company = company
-    self.companyWebsite = companyWebsite
   }
   
   init(row: Row) throws {
@@ -39,7 +36,6 @@ final class User: Model {
     lastname = try row.get("lastname")
     website = try row.get("website")
     company = try row.get("company")
-    companyWebsite = try row.get("company_website")
   }
   
   func makeRow() throws -> Row {
@@ -51,7 +47,6 @@ final class User: Model {
     try row.set("lastname", lastname)
     try row.set("website", website)
     try row.set("company", company)
-    try row.set("company_website", companyWebsite)
     return row
   }
 }
@@ -69,12 +64,38 @@ extension User: Preparation {
       builder.string("lastname", optional: true)
       builder.string("website", optional: true)
       builder.string("company", optional: true)
-      builder.string("company_website", optional: true)
     }
   }
   
   static func revert(_ database: Database) throws {
     
     try database.delete(self)
+  }
+}
+
+extension User: JSONConvertible {
+  
+  convenience init(json: JSON) throws {
+    
+    try self.init(
+      email: json.get("email"),
+      password: json.get("password"),
+      firstname: json.get("firstname"),
+      lastname: json.get("lastname"),
+      website: json.get("website"),
+      company: json.get("company")
+    )
+  }
+  
+  func makeJSON() throws -> JSON {
+    
+    var json = JSON()
+    try json.set("email", email)
+    try json.set("password", password)
+    try json.set("firstname", firstname)
+    try json.set("lastname", lastname)
+    try json.set("website", website)
+    try json.set("company", company)
+    return json
   }
 }
