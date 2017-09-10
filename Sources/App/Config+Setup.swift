@@ -5,7 +5,6 @@ import AuthProvider
 extension Config {
   
     public func setup() throws {
-      
         Node.fuzzy = [Row.self, JSON.self, Node.self]
 
         try setupProviders()
@@ -14,7 +13,6 @@ extension Config {
     
     /// Configure providers
     private func setupProviders() throws {
-      
       try addProvider(FluentProvider.Provider.self)
       try addProvider(PostgreSQLProvider.Provider.self)
       try addProvider(AuthProvider.Provider.self)
@@ -23,7 +21,6 @@ extension Config {
     /// Add all models that should have their
     /// schemas prepared before the app boots
     private func setupPreparations() throws {
-      
       preparations.append(Meetup.self)
       preparations.append(User.self)
     }

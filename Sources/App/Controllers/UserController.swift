@@ -1,10 +1,14 @@
 import Vapor
 import HTTP
+import AuthProvider
 
 final class UserController {
 
   lazy var userDispatcher = UserDispatcher()
   
+  /// tries to create user out of json request
+  /// - returns on success: json with user
+  /// - returns on failure: json with error status + message
   func register(_ req: Request) throws -> ResponseRepresentable {
     guard let json = req.json else {
       return try JSON(node: ["status": 406, "message": "no json provided"])
@@ -23,9 +27,18 @@ final class UserController {
     if (userExists) {
       return try JSON(node: ["status": 409, "message": "user with email \(user.email) already exists"])
     } else {
+      user.password = try BCryptHasher().make(user.password.bytes).makeString()
       try user.save()
     }
     
+    return try user.makeJSON()
+  }
+  
+  /// tries to authenticate user provided as basic auth
+  /// - returns on success: json with user
+  /// - returns on failure: json with error (vapors own)
+  func login(_ req: Request) throws -> ResponseRepresentable {
+    let user = try req.auth.assertAuthenticated(User.self)
     return try user.makeJSON()
   }
 }

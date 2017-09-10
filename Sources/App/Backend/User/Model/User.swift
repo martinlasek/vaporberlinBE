@@ -1,5 +1,6 @@
 import Vapor
 import FluentProvider
+import AuthProvider
 
 final class User: Model {
   
@@ -51,6 +52,8 @@ final class User: Model {
   }
 }
 
+// MARK: Preparation
+
 extension User: Preparation {
   
   static func prepare(_ database: Database) throws {
@@ -72,6 +75,8 @@ extension User: Preparation {
     try database.delete(self)
   }
 }
+
+// MARK: JSON
 
 extension User: JSONConvertible {
   
@@ -97,5 +102,25 @@ extension User: JSONConvertible {
     try json.set("website", website)
     try json.set("company", company)
     return json
+  }
+}
+
+// MARK: Auth
+
+extension User: PasswordAuthenticatable {
+  
+  public var hashedPassword: String? {
+    return password
+  }
+  
+  public static var passwordVerifier: PasswordVerifier? {
+    return MyPasswordVerifier()
+  }
+}
+
+struct MyPasswordVerifier: PasswordVerifier {
+  
+  func verify(password: Bytes, matches hash: Bytes) throws -> Bool {
+    return try BCryptHasher().verify(password: password, matches: hash)
   }
 }
