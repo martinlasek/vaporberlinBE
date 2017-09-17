@@ -11,10 +11,10 @@ extension Droplet {
     
     /* user routes */
     let uc = UserController()
-    post("user", handler: uc.register)
+    post("api/user", handler: uc.register)
     
     /* basic auth secured routes */
     let password = grouped([PasswordAuthenticationMiddleware(User.self)])
-    password.post("login", handler: uc.login)
+    password.post("api/login", handler: uc.login)
   }
 }

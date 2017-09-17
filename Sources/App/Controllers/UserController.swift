@@ -6,7 +6,7 @@ final class UserController {
 
   lazy var userDispatcher = UserDispatcher()
   
-  /// tries to create user out of json request
+  /// create user out of json request
   /// - returns on success: json with user
   /// - returns on failure: json with error status + message
   func register(_ req: Request) throws -> ResponseRepresentable {
@@ -34,7 +34,7 @@ final class UserController {
     return try user.makeJSON()
   }
   
-  /// tries to authenticate user provided as basic auth
+  /// authenticate user provided as basic auth
   /// - returns on success: json with user
   /// - returns on failure: json with error (vapors own)
   func login(_ req: Request) throws -> ResponseRepresentable {
