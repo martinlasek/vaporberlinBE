@@ -34,10 +34,20 @@ final class UserController {
     return try user.makeJSON()
   }
   
-  /// authenticate user provided as basic auth
-  /// - returns on success: json with user
+  /// authenticate user through basic auth
+  /// - returns on success: json with token
   /// - returns on failure: json with error (vapors own)
   func login(_ req: Request) throws -> ResponseRepresentable {
+    let user = try req.auth.assertAuthenticated(User.self)
+    let token = try Token.generate(for: user)
+    try token.save()
+    return try token.makeJSON()
+  }
+  
+  /// authenticate user through token
+  /// - returns on success: user as json
+  /// - returns on failure: error as json (vapors own)
+  func profile(_ req: Request) throws -> ResponseRepresentable {
     let user = try req.auth.assertAuthenticated(User.self)
     return try user.makeJSON()
   }

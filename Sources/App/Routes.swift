@@ -16,5 +16,9 @@ extension Droplet {
     /* basic auth secured routes */
     let password = grouped([PasswordAuthenticationMiddleware(User.self)])
     password.post("api/login", handler: uc.login)
+    
+    /* token secured routes */
+    let tokenMW = grouped([TokenAuthenticationMiddleware(User.self)])
+    tokenMW.get("profile", handler: uc.profile)
   }
 }

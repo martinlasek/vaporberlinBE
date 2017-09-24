@@ -124,3 +124,9 @@ struct MyPasswordVerifier: PasswordVerifier {
     return try BCryptHasher().verify(password: password, matches: hash)
   }
 }
+
+// MARK: Token
+
+extension User: TokenAuthenticatable {
+  typealias TokenType = Token
+}
