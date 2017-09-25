@@ -19,6 +19,6 @@ extension Droplet {
     
     /* token secured routes */
     let tokenMW = grouped([TokenAuthenticationMiddleware(User.self)])
-    tokenMW.get("profile", handler: uc.profile)
+    tokenMW.get("api/user", handler: uc.user)
   }
 }

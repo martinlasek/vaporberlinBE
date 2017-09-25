@@ -47,7 +47,7 @@ final class UserController {
   /// authenticate user through token
   /// - returns on success: user as json
   /// - returns on failure: error as json (vapors own)
-  func profile(_ req: Request) throws -> ResponseRepresentable {
+  func user(_ req: Request) throws -> ResponseRepresentable {
     let user = try req.auth.assertAuthenticated(User.self)
     return try user.makeJSON()
   }
