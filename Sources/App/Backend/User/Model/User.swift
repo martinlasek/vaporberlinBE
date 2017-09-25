@@ -79,9 +79,7 @@ extension User: Preparation {
 // MARK: JSON
 
 extension User: JSONConvertible {
-  
   convenience init(json: JSON) throws {
-    
     try self.init(
       email: json.get("email"),
       password: json.get("password"),
@@ -93,8 +91,8 @@ extension User: JSONConvertible {
   }
   
   func makeJSON() throws -> JSON {
-    
     var json = JSON()
+    try json.set("id", id!.int)
     try json.set("email", email)
     try json.set("password", password)
     try json.set("firstname", firstname)
@@ -129,4 +127,20 @@ struct MyPasswordVerifier: PasswordVerifier {
 
 extension User: TokenAuthenticatable {
   typealias TokenType = Token
+}
+
+// MARK: Topics
+
+extension User {
+  var topics: Children<User, Topic> {
+    return children()
+  }
+}
+
+// MARK: Votes
+
+extension User {
+  var votes: Siblings<User, Topic, Pivot<User, Topic>> {
+    return siblings()
+  }
 }

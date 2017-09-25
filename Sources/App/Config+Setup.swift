@@ -24,5 +24,7 @@ extension Config {
       preparations.append(Meetup.self)
       preparations.append(User.self)
       preparations.append(Token.self)
+      preparations.append(Topic.self)
+      preparations.append(Pivot<User, Topic>.self)
     }
 }
