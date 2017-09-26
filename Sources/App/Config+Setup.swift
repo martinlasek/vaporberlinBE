@@ -1,6 +1,7 @@
 import FluentProvider
 import PostgreSQLProvider
 import AuthProvider
+import LeafProvider
 
 extension Config {
   
@@ -16,6 +17,7 @@ extension Config {
       try addProvider(FluentProvider.Provider.self)
       try addProvider(PostgreSQLProvider.Provider.self)
       try addProvider(AuthProvider.Provider.self)
+      try addProvider(LeafProvider.Provider.self)
     }
     
     /// Add all models that should have their

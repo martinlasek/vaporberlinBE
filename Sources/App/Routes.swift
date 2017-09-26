@@ -10,6 +10,11 @@ extension Droplet {
     let uc = UserController()
     let tc = TopicController()
     
+    /* index (vuejs) */
+    get("/") { req in
+      return try self.view.make("index")
+    }
+    
     /* public routes */
     get("api/meetup/upcoming", handler: mc.upcomingMeetup)
     get("api/topic/list", handler: tc.listTopic)
