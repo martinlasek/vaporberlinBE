@@ -61,3 +61,10 @@ extension Topic: JSONConvertible {
   }
 }
 
+// MARK: Votes
+
+extension Topic {
+  var users: Siblings<Topic, User, Pivot<Topic, User>> {
+    return siblings()
+  }
+}

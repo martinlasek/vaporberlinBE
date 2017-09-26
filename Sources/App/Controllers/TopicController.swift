@@ -13,6 +13,7 @@ final class TopicController {
     
     let topic = Topic(description: try json.get("description"), user: user)
     try topic.save()
+    try topic.users.add(user)
     return try topic.makeJSON()
   }
   
