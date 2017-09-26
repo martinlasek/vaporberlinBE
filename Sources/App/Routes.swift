@@ -11,7 +11,8 @@ extension Droplet {
     let tc = TopicController()
     
     /* public routes */
-    get("meetup/upcoming", handler: mc.upcomingMeetup)
+    get("api/meetup/upcoming", handler: mc.upcomingMeetup)
+    get("api/topic/list", handler: tc.listTopic)
     post("api/user", handler: uc.register)
     
     /* basic auth secured routes */
