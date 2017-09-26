@@ -48,7 +48,7 @@ extension Topic: JSONConvertible {
   convenience init(json: JSON) throws {
     try self.init(
       description: json.get("description"),
-      // todo: refactore force unwrapping
+      // todo: refactor force unwrapping
       user: User.find(json.get("userid"))!
     )
   }
@@ -57,6 +57,8 @@ extension Topic: JSONConvertible {
     var json = JSON()
     try json.set("id", id!.int)
     try json.set("description", description)
+    try json.set("creatorId", userId)
+    try json.set("votes", try users.all().count)
     return json
   }
 }

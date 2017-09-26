@@ -8,7 +8,7 @@ final class TopicController {
   func createTopic(_ req: Request) throws -> ResponseRepresentable {
     let user = try req.auth.assertAuthenticated(User.self)
     guard let json = req.json else {
-      throw Abort(.badRequest, reason: "no json provided")
+      return try JSON(node: ["status": 406, "message": "no json provided"])
     }
     
     let topic = Topic(description: try json.get("description"), user: user)
@@ -22,5 +22,30 @@ final class TopicController {
     let topics = try Topic.all()
     let json = try JSON(node: ["topics": try topics.makeJSON()])
     return json
+  }
+  
+  /// vote for a topic
+  func vote(_ req: Request) throws -> ResponseRepresentable {
+    let user = try req.auth.assertAuthenticated(User.self)
+    guard let json = req.json else {
+      return try JSON(node: ["status": 406, "message": "no json provided"])
+    }
+    
+    let topicId = try json.get("topicid") as Int
+    let topicList = try user.votes.all().filter {topic in topic.id!.int == topicId}
+    
+    if (topicList.count > 0) {
+      return try JSON(node: ["status": 406, "message": "you cannot vote for already voted topics"])
+    }
+    
+    let topic = try Topic.find(topicId)
+    
+    guard let t = topic else {
+      return try JSON(node: ["status": 406, "message": "could not find topic with id: \(topicId)"])
+    }
+    
+    try user.votes.add(t)
+    
+    return try JSON(node: ["status": 200, "message": "successfully voted"])
   }
 }

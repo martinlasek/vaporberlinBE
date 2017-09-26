@@ -23,5 +23,6 @@ extension Droplet {
     let tokenMW = grouped([TokenAuthenticationMiddleware(User.self)])
     tokenMW.get("api/user", handler: uc.getUser)
     tokenMW.post("api/topic", handler: tc.createTopic)
+    tokenMW.post("api/topic/vote", handler: tc.vote)
   }
 }
