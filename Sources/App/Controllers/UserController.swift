@@ -34,7 +34,7 @@ final class UserController {
     return try user.makeJSON()
   }
   
-  /// authenticate user through basic auth
+  /// create auth token for user through basic auth
   /// - returns on success: json with token
   /// - returns on failure: json with error (vapors own)
   func login(_ req: Request) throws -> ResponseRepresentable {
@@ -44,7 +44,14 @@ final class UserController {
     return try token.makeJSON()
   }
   
-  /// authenticate user through token
+  /// delete all auth token for given user
+  func logout(_ req: Request) throws -> ResponseRepresentable {
+    let user = try req.auth.assertAuthenticated(User.self)
+    try Token.makeQuery().filter("user_id", user.id).all().forEach({token in try token.delete()})
+    return try JSON(node: ["status": 200, "message": "successfully logged out"])
+  }
+  
+  /// return user by auth token
   /// - returns on success: user as json
   /// - returns on failure: error as json (vapors own)
   func getUser(_ req: Request) throws -> ResponseRepresentable {

@@ -29,5 +29,6 @@ extension Droplet {
     tokenMW.get("api/user", handler: uc.getUser)
     tokenMW.post("api/topic", handler: tc.createTopic)
     tokenMW.post("api/topic/vote", handler: tc.vote)
+    tokenMW.post("api/logout", handler: uc.logout)
   }
 }
