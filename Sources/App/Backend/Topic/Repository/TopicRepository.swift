@@ -1,6 +1,6 @@
 class TopicRepository {
   
-  func voteBy(topicId: Int, userId: Int) throws {
-    
+  func getList() throws -> [Topic]{
+    return try Topic.all()
   }
 }

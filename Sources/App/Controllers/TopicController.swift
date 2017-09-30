@@ -17,11 +17,11 @@ final class TopicController {
     return try topic.makeJSON()
   }
   
-  /** TOOD: pass request-topic-list to dispatch */
   func listTopic(_ req: Request) throws -> ResponseRepresentable {
-    let topics = try Topic.all()
-    let json = try JSON(node: ["topics": try topics.makeJSON()])
-    return json
+    guard let topicsResp = try topicDispatcher.getList(req: TopicListRequest()) else {
+      return try JSON(node: ["status": 500, "message": "could not get list of topics"])
+    }
+    return try topicsResp.makeJSON()
   }
   
   /// vote for a topic
