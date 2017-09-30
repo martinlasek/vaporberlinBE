@@ -54,11 +54,14 @@ extension Topic: JSONConvertible {
   }
   
   func makeJSON() throws -> JSON {
+    let votes = try users.all().count
+    let voter = try users.all().map {user in user.id!.int}
     var json = JSON()
     try json.set("id", id!.int)
     try json.set("description", description)
     try json.set("creatorId", userId)
-    try json.set("votes", try users.all().count)
+    try json.set("votes", votes)
+    try json.set("voter", voter)
     return json
   }
 }
