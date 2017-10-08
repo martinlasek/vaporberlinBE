@@ -1,7 +1,6 @@
 import Vapor
 
 final class TopicController {
-  
   lazy var topicDispatcher = TopicDispatcher()
   
   /** TODO: pass data to dispatcher (createTopic) and number crunch over there */

@@ -3,7 +3,6 @@ import HTTP
 import AuthProvider
 
 final class UserController {
-
   lazy var userDispatcher = UserDispatcher()
   
   /// create user out of json request
@@ -16,21 +15,17 @@ final class UserController {
     
     var user: User
     
-    do {
-      user = try User(json: json)
-    } catch {
-      return try JSON(node: ["status": 406, "message": "could not create user with provided json: \(json)"])
-    }
+    do { user = try User(json: json) }
+    catch { return try JSON(node: ["status": 406, "message": "could not create user with provided json: \(json)"]) }
     
     let userExists = try userDispatcher.checkEmailExists(EmailExistRequest(email: user.email))
     
     if (userExists) {
       return try JSON(node: ["status": 409, "message": "user with email \(user.email) already exists"])
-    } else {
-      user.password = try BCryptHasher().make(user.password.bytes).makeString()
-      try user.save()
     }
     
+    user.password = try BCryptHasher().make(user.password.bytes).makeString()
+    try user.save()
     return try user.makeJSON()
   }
   
