@@ -1,6 +1,6 @@
 class TopicRepository {
   
-  func getList() throws -> [Topic]{
+  func getList() throws -> [Topic] {
     return try Topic.all()
   }
 }

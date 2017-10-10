@@ -5,8 +5,7 @@ extension Droplet {
   
   func setupRoutes() throws {
       
-    /* controller */
-    let mc = MeetupController()
+    /* controllers */
     let uc = UserController()
     let tc = TopicController()
     
@@ -16,19 +15,20 @@ extension Droplet {
     }
     
     /* public routes */
-    get("api/meetup/upcoming", handler: mc.upcomingMeetup)
     get("api/topic/list", handler: tc.listTopic)
     post("api/user", handler: uc.register)
     
     /* basic auth secured routes */
-    let password = grouped([PasswordAuthenticationMiddleware(User.self)])
-    password.post("api/login", handler: uc.login)
+    let passwordMW = grouped([PasswordAuthenticationMiddleware(User.self)])
+    passwordMW.post("api/login", handler: uc.login)
     
     /* token secured routes */
     let tokenMW = grouped([TokenAuthenticationMiddleware(User.self)])
-    tokenMW.get("api/user", handler: uc.getUser)
-    tokenMW.post("api/topic", handler: tc.createTopic)
-    tokenMW.post("api/topic/vote", handler: tc.vote)
-    tokenMW.post("api/logout", handler: uc.logout)
+    tokenMW.group("api") { routeBuilder in
+        routeBuilder.get("user", handler: uc.getUser)
+        routeBuilder.post("topic", handler: tc.createTopic)
+        routeBuilder.post("topic/vote", handler: tc.vote)
+        routeBuilder.post("logout", handler: uc.logout)
+    }
   }
 }
