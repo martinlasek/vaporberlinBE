@@ -7,7 +7,8 @@ extension Droplet {
       
     /* controllers */
     let uc = UserController()
-    let tc = TopicController()
+    let tc = TopicController(drop: self)
+    tc.setupRoutes()
     
     /* index (vuejs) */
     get("/") { req in
@@ -15,8 +16,8 @@ extension Droplet {
     }
     
     /* public routes */
-    get("api/topic/list", handler: tc.listTopic)
-    post("api/user", handler: uc.register)
+    let api = self.grouped("api")
+    api.post("user", handler: uc.register)
     
     /* basic auth secured routes */
     let passwordMW = grouped([PasswordAuthenticationMiddleware(User.self)])
@@ -26,8 +27,6 @@ extension Droplet {
     let tokenMW = grouped([TokenAuthenticationMiddleware(User.self)])
     tokenMW.group("api") { routeBuilder in
         routeBuilder.get("user", handler: uc.getUser)
-        routeBuilder.post("topic", handler: tc.createTopic)
-        routeBuilder.post("topic/vote", handler: tc.vote)
         routeBuilder.post("logout", handler: uc.logout)
     }
   }

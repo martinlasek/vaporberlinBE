@@ -1,7 +1,25 @@
-import Vapor
+import AuthProvider
 
 final class TopicController {
-  lazy var topicDispatcher = TopicDispatcher()
+  let drop: Droplet
+  let topicDispatcher: TopicDispatcher
+  
+  init(drop: Droplet) {
+    self.drop = drop
+    self.topicDispatcher = TopicDispatcher()
+  }
+  
+  func setupRoutes() {
+    
+    /// public
+    let api = drop.grouped("api")
+    api.get("topic/list", handler: listTopic)
+    
+    /// token
+    let apiTokenMW = api.grouped([TokenAuthenticationMiddleware(User.self)])
+    apiTokenMW.post("topic", handler: createTopic)
+    apiTokenMW.post("topic/vote", handler: vote)
+  }
   
   /** TODO: pass data to dispatcher (createTopic) and number crunch over there */
   func createTopic(_ req: Request) throws -> ResponseRepresentable {
