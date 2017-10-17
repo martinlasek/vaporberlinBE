@@ -1,4 +1,3 @@
-import HTTP
 import AuthProvider
 
 final class UserController {
