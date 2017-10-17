@@ -7,7 +7,6 @@ extension Config {
   
     public func setup() throws {
         Node.fuzzy = [Row.self, JSON.self, Node.self]
-
         try setupProviders()
         try setupPreparations()
     }

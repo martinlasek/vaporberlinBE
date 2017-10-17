@@ -1,9 +1,30 @@
-import Vapor
 import HTTP
 import AuthProvider
 
 final class UserController {
-  lazy var userDispatcher = UserDispatcher()
+  let drop: Droplet
+  let userDispatcher: UserDispatcher
+  
+  init(drop: Droplet) {
+    self.drop = drop
+    self.userDispatcher = UserDispatcher()
+  }
+  
+  func setupRoutes() {
+    
+    /// public
+    let api = drop.grouped("api")
+    api.post("user", handler: register)
+    
+    /// password
+    let apiPasswordMW = api.grouped([PasswordAuthenticationMiddleware(User.self)])
+    apiPasswordMW.post("login", handler: login)
+    
+    /// token
+    let apiTokenMW = api.grouped([TokenAuthenticationMiddleware(User.self)])
+    apiTokenMW.get("user", handler: getUser)
+    apiTokenMW.post("logout", handler: logout)
+  }
   
   /// create user out of json request
   /// - returns on success: json with user
@@ -19,7 +40,7 @@ final class UserController {
     catch { return try JSON(node: ["status": 406, "message": "could not create user with provided json: \(json)"]) }
     
     let userExists = try userDispatcher.checkEmailExists(EmailExistRequest(email: user.email))
-
+    
     if (userExists) {
       return try JSON(node: ["status": 409, "message": "user with email \(user.email) already exists"])
     }
@@ -54,3 +75,4 @@ final class UserController {
     return try user.makeJSON()
   }
 }
+

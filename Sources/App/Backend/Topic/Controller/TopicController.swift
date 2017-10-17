@@ -55,14 +55,11 @@ final class TopicController {
       return try JSON(node: ["status": 406, "message": "you cannot vote for already voted topics"])
     }
     
-    let topic = try Topic.find(topicId)
-    
-    guard let t = topic else {
+    guard let topic = try Topic.find(topicId) else {
       return try JSON(node: ["status": 406, "message": "could not find topic with id: \(topicId)"])
     }
     
-    try user.votes.add(t)
-    
+    try user.votes.add(topic)
     return try JSON(node: ["status": 200, "message": "successfully voted"])
   }
 }
