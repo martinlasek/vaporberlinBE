@@ -25,9 +25,7 @@ final class UserController {
     apiTokenMW.post("logout", handler: logout)
   }
   
-  /// create user out of json request
-  /// - returns on success: json with user
-  /// - returns on failure: json with error status + message
+  /// create user out of a json request
   func register(_ req: Request) throws -> ResponseRepresentable {
     guard let json = req.json else {
       return try JSON(node: ["status": 406, "message": "no json provided"])
@@ -50,8 +48,6 @@ final class UserController {
   }
   
   /// create auth token for user through basic auth
-  /// - returns on success: json with token
-  /// - returns on failure: json with error (vapors own)
   func login(_ req: Request) throws -> ResponseRepresentable {
     let user = try req.auth.assertAuthenticated(User.self)
     let token = try Token.generate(for: user)
@@ -67,8 +63,6 @@ final class UserController {
   }
   
   /// return user by auth token
-  /// - returns on success: user as json
-  /// - returns on failure: error as json (vapors own)
   func getUser(_ req: Request) throws -> ResponseRepresentable {
     let user = try req.auth.assertAuthenticated(User.self)
     return try user.makeJSON()
