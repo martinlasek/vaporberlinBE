@@ -21,7 +21,7 @@ final class TopicController {
     apiTokenMW.post("topic/vote", handler: vote)
   }
   
-  /** TODO: pass data to dispatcher (createTopic) and number crunch over there */
+  // create topic
   func createTopic(_ req: Request) throws -> ResponseRepresentable {
     let user = try req.auth.assertAuthenticated(User.self)
     guard let json = req.json else {
@@ -34,6 +34,7 @@ final class TopicController {
     return try topic.makeJSON()
   }
   
+  // list topic
   func listTopic(_ req: Request) throws -> ResponseRepresentable {
     guard let topicsResp = try topicDispatcher.getList(req: TopicListRequest()) else {
       return try JSON(node: ["status": 500, "message": "could not get list of topics"])
