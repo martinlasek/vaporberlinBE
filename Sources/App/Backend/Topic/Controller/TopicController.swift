@@ -27,14 +27,15 @@ final class TopicController {
     guard let json = req.json else {
       return try JSON(node: ["status": 406, "message": "no json provided"])
     }
-    
-    let topic = Topic(description: try json.get("description"), user: user)
-    try topic.save()
-    try topic.users.add(user)
-    return try topic.makeJSON()
+    let description = try json.get("description") as String
+    let req = CreateTopicRequest(description: description, user: user)
+    guard let resp = try topicDispatcher.create(req: req) else {
+      return try JSON(node: ["status": 500, "message": "could not create topic with 'description: \(description)'"])
+    }
+    return try resp.makeJSON()
   }
   
-  // list topic
+  // list topics
   func listTopic(_ req: Request) throws -> ResponseRepresentable {
     guard let topicsResp = try topicDispatcher.getList(req: TopicListRequest()) else {
       return try JSON(node: ["status": 500, "message": "could not get list of topics"])
@@ -42,7 +43,7 @@ final class TopicController {
     return try topicsResp.makeJSON()
   }
   
-  /// vote for a topic
+  /// vote a topic
   func vote(_ req: Request) throws -> ResponseRepresentable {
     let user = try req.auth.assertAuthenticated(User.self)
     guard let json = req.json else {
@@ -60,7 +61,7 @@ final class TopicController {
       return try JSON(node: ["status": 406, "message": "could not find topic with id: \(topicId)"])
     }
     
-    try user.votes.add(topic)
+    try topic.votes.add(user)
     return try JSON(node: ["status": 200, "message": "successfully voted"])
   }
 }

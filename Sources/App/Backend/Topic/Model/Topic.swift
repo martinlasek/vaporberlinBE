@@ -4,13 +4,11 @@ import FluentProvider
 final class Topic: Model {
   let storage = Storage()
   let description: String
-  let userId: Identifier
+  let userId: Int
   
-  init(description: String, user: User) {
+  init(description: String, userId: Int) {
     self.description = description
-    
-    // todo: guard let
-    self.userId = user.id!
+    self.userId = userId
   }
   
   init(row: Row) throws {
@@ -46,21 +44,20 @@ extension Topic: Preparation {
 
 extension Topic: JSONConvertible {
   convenience init(json: JSON) throws {
-    try self.init(
-      description: json.get("description"),
-      // todo: refactor force unwrapping
-      user: User.find(json.get("userid"))!
-    )
+    let description = try json.get("description") as String
+    let userId = try json.get("userid") as Int
+    let user = try User.find(userId)
+    self.init(description: description, userId: user!.id!.int!)
   }
   
   func makeJSON() throws -> JSON {
-    let votes = try users.all().count
-    let voter = try users.all().map {user in user.id!.int}
+    let votesCount = try votes.all().count
+    let voter = try votes.all().map {user in user.id!.int}
     var json = JSON()
     try json.set("id", id!.int)
     try json.set("description", description)
     try json.set("creatorId", userId)
-    try json.set("votes", votes)
+    try json.set("votes", votesCount)
     try json.set("voter", voter)
     return json
   }
@@ -69,7 +66,7 @@ extension Topic: JSONConvertible {
 // MARK: Votes
 
 extension Topic {
-  var users: Siblings<Topic, User, Pivot<Topic, User>> {
+  var votes: Siblings<Topic, User, Pivot<Topic, User>> {
     return siblings()
   }
 }
