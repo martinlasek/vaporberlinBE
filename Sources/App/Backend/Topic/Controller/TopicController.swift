@@ -49,19 +49,10 @@ final class TopicController {
     guard let json = req.json else {
       return try JSON(node: ["status": 406, "message": "no json provided"])
     }
-    
     let topicId = try json.get("topicid") as Int
-    let topicList = try user.votes.filter("id", topicId).all()
-    
-    if (topicList.count > 0) {
-      return try JSON(node: ["status": 406, "message": "you cannot vote for already voted topics"])
+    guard let res = try topicDispatcher.vote(req: VoteTopicRequest(topicId: topicId, user: user)) else {
+      return try JSON(node: ["status": 406, "message": "could not vote topic with 'id: \(topicId)' as 'user: \(user.id!.int!)'"])
     }
-    
-    guard let topic = try Topic.find(topicId) else {
-      return try JSON(node: ["status": 406, "message": "could not find topic with id: \(topicId)"])
-    }
-    
-    try topic.votes.add(user)
-    return try JSON(node: ["status": 200, "message": "successfully voted"])
+    return try res.makeJSON()
   }
 }
