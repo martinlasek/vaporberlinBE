@@ -51,7 +51,7 @@ final class TopicController {
     }
     
     let topicId = try json.get("topicid") as Int
-    let topicList = try user.votes.all().filter {topic in topic.id!.int == topicId}
+    let topicList = try user.votes.filter("id", topicId).all()
     
     if (topicList.count > 0) {
       return try JSON(node: ["status": 406, "message": "you cannot vote for already voted topics"])
