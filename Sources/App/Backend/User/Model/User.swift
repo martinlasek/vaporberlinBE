@@ -3,7 +3,6 @@ import FluentProvider
 import AuthProvider
 
 final class User: Model {
-  
   let storage = Storage()
   var email: String
   var password: String
@@ -15,12 +14,11 @@ final class User: Model {
   init(
     email: String,
     password: String,
-    firstname: String?,
-    lastname: String?,
-    website: String?,
-    company: String?
+    firstname: String? = nil,
+    lastname: String? = nil,
+    website: String? = nil,
+    company: String? = nil
   ) {
-    
     self.email = email
     self.password = password
     self.firstname = firstname
@@ -30,7 +28,6 @@ final class User: Model {
   }
   
   init(row: Row) throws {
-    
     email = try row.get("email")
     password = try row.get("password")
     firstname = try row.get("firstname")
@@ -40,7 +37,6 @@ final class User: Model {
   }
   
   func makeRow() throws -> Row {
-    
     var row = Row()
     try row.set("email", email)
     try row.set("password", password)
@@ -55,11 +51,8 @@ final class User: Model {
 // MARK: Preparation
 
 extension User: Preparation {
-  
   static func prepare(_ database: Database) throws {
-    
     try database.create(self) { builder in
-      
       builder.id()
       builder.string("email")
       builder.string("password")
@@ -71,7 +64,6 @@ extension User: Preparation {
   }
   
   static func revert(_ database: Database) throws {
-    
     try database.delete(self)
   }
 }
@@ -106,18 +98,15 @@ extension User: JSONConvertible {
 // MARK: Auth
 
 extension User: PasswordAuthenticatable {
-  
   public var hashedPassword: String? {
     return password
   }
-  
   public static var passwordVerifier: PasswordVerifier? {
     return MyPasswordVerifier()
   }
 }
 
 struct MyPasswordVerifier: PasswordVerifier {
-  
   func verify(password: Bytes, matches hash: Bytes) throws -> Bool {
     return try BCryptHasher().verify(password: password, matches: hash)
   }

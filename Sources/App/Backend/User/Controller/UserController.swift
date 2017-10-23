@@ -32,19 +32,22 @@ final class UserController {
     }
     
     var user: User
-    
     do { user = try User(json: json) }
     catch { return try JSON(node: ["status": 406, "message": "could not create user with provided json: \(json)"]) }
     
     let userExists = try userDispatcher.checkEmailExists(EmailExistRequest(email: user.email))
-    
     if (userExists) {
       return try JSON(node: ["status": 409, "message": "user with email \(user.email) already exists"])
     }
     
-    user.password = try BCryptHasher().make(user.password.bytes).makeString()
-    try user.save()
-    return try user.makeJSON()
+    var req: RegisterUserRequest
+    do { req = try RegisterUserRequest.fromJSON(json) }
+    catch { return try JSON(node: ["status": 406, "message": "could not register user with provided json: \(json)"]) }
+    
+    guard let res = try userDispatcher.register(req: req) else {
+      return try JSON(node: ["status": 406, "message": "could not register user with provided json: \(json)"])
+    }
+    return try res.makeJSON()
   }
   
   /// create auth token for user through basic auth
