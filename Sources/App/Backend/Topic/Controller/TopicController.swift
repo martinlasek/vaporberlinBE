@@ -46,7 +46,6 @@ final class TopicController {
   /// vote a topic
   func vote(_ req: Request) throws -> ResponseRepresentable {
     let user = try req.auth.assertAuthenticated(User.self)
-    
     guard
       let json = req.json,
       let topicId = json["topicid"]?.int,

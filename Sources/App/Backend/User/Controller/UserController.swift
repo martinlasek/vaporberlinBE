@@ -3,10 +3,12 @@ import AuthProvider
 final class UserController {
   let drop: Droplet
   let userDispatcher: UserDispatcher
+  let tokenDispatcher: TokenDispatcher
   
   init(drop: Droplet) {
     self.drop = drop
     self.userDispatcher = UserDispatcher()
+    self.tokenDispatcher = TokenDispatcher()
   }
   
   func setupRoutes() {
@@ -45,17 +47,18 @@ final class UserController {
     catch { return try JSON(node: ["status": 406, "message": "could not register user with provided json: \(json)"]) }
     
     guard let res = try userDispatcher.register(req: req) else {
-      return try JSON(node: ["status": 406, "message": "could not register user with provided json: \(json)"])
+      return try JSON(node: ["status": 500, "message": "could not register user with provided json: \(json)"])
     }
     return try res.makeJSON()
   }
   
-  /// create auth token for user through basic auth
+  /// create auth token for user via basic auth
   func login(_ req: Request) throws -> ResponseRepresentable {
     let user = try req.auth.assertAuthenticated(User.self)
-    let token = try Token.generate(for: user)
-    try token.save()
-    return try token.makeJSON()
+    guard let res = try tokenDispatcher.generate(req: SaveTokenRequest(user: user)) else {
+      return try JSON(node: ["status": 500, "message": "could not login user"])
+    }
+    return try res.makeJSON()
   }
   
   /// delete all auth token for given user
