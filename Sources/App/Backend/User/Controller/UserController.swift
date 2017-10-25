@@ -30,24 +30,32 @@ final class UserController {
   /// create user out of a json request
   func register(_ req: Request) throws -> ResponseRepresentable {
     guard let json = req.json else {
-      return try JSON(node: ["status": 406, "message": "no json provided"])
+      return try Helper.errorJson(status: 406, message: "no json provided")
     }
     
     var user: User
     do { user = try User(json: json) }
-    catch { return try JSON(node: ["status": 406, "message": "could not create user with provided json: \(json)"]) }
+    catch { return try Helper.errorJson(status: 406, message: "could not create user with provided json: \(json)")}
+    
+    if !Helper.validateEmail(user.email) {
+      return try Helper.errorJson(status: 406, message: "invalid email")
+    }
+    
+    if !Helper.validatePassword(user.password) {
+      return try Helper.errorJson(status: 406, message: "password must contain at least 8 character")
+    }
     
     let userExists = try userDispatcher.checkEmailExists(EmailExistRequest(email: user.email))
     if (userExists) {
-      return try JSON(node: ["status": 409, "message": "user with email \(user.email) already exists"])
+      return try Helper.errorJson(status: 409, message: "user with email \(user.email) already exists")
     }
     
     var req: RegisterUserRequest
     do { req = try RegisterUserRequest.fromJSON(json) }
-    catch { return try JSON(node: ["status": 406, "message": "could not register user with provided json: \(json)"]) }
+    catch { return try Helper.errorJson(status: 406, message: "could not register user with provided json: \(json)") }
     
     guard let res = try userDispatcher.register(req: req) else {
-      return try JSON(node: ["status": 500, "message": "could not register user with provided json: \(json)"])
+      return try Helper.errorJson(status: 500, message: "could not register user with provided json: \(json)")
     }
     return try res.makeJSON()
   }
@@ -56,7 +64,7 @@ final class UserController {
   func login(_ req: Request) throws -> ResponseRepresentable {
     let user = try req.auth.assertAuthenticated(User.self)
     guard let res = try tokenDispatcher.generate(req: SaveTokenRequest(user: user)) else {
-      return try JSON(node: ["status": 500, "message": "could not login user"])
+      return try Helper.errorJson(status: 500, message: "could not login user")
     }
     return try res.makeJSON()
   }
