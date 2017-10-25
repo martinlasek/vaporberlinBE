@@ -5,13 +5,13 @@ final class Helper {
     let minLength = 6
     var valid = false
     valid = email.range(of: "@") != nil
-    valid = email.count >= minLength
+    valid = email.characters.count >= minLength
     return valid
   }
   
   static func validatePassword(_ password: String) -> Bool {
     let minLength = 8
-    return password.count >= minLength
+    return password.characters.count >= minLength
   }
   
   static func errorJson(status: Int, message: String) throws -> JSON {
