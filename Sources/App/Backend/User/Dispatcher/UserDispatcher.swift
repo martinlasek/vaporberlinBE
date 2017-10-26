@@ -11,6 +11,7 @@ class UserDispatcher {
     guard let usr = try userRepository.create(user) else {
       return nil
     }
+    
     return RegisterUserResponse.fromEntity(usr)
   }
   

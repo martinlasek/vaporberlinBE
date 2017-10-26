@@ -57,6 +57,7 @@ final class UserController {
     guard let res = try userDispatcher.register(req: req) else {
       return try Helper.errorJson(status: 500, message: "could not register user with provided json: \(json)")
     }
+    
     return try res.makeJSON()
   }
   
@@ -66,6 +67,7 @@ final class UserController {
     guard let res = try tokenDispatcher.generate(req: SaveTokenRequest(user: user)) else {
       return try Helper.errorJson(status: 500, message: "could not login user")
     }
+    
     return try res.makeJSON()
   }
   

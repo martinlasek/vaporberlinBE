@@ -27,11 +27,13 @@ final class TopicController {
     guard let json = req.json else {
       return try JSON(node: ["status": 406, "message": "no json provided"])
     }
+    
     let description = try json.get("description") as String
     let req = CreateTopicRequest(description: description, user: user)
     guard let resp = try topicDispatcher.create(req: req) else {
       return try JSON(node: ["status": 500, "message": "could not create topic with 'description: \(description)'"])
     }
+    
     return try resp.makeJSON()
   }
   
@@ -40,6 +42,7 @@ final class TopicController {
     guard let topicsResp = try topicDispatcher.getList(req: TopicListRequest()) else {
       return try JSON(node: ["status": 500, "message": "could not get list of topics"])
     }
+    
     return try topicsResp.makeJSON()
   }
   
@@ -53,6 +56,7 @@ final class TopicController {
     else {
         return try JSON(node: ["status": 406, "message": "could not vote topic as 'user: \(user.id!.int!)'"])
     }
+    
     return try res.makeJSON()
   }
 }

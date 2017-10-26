@@ -54,7 +54,7 @@ extension Topic: JSONConvertible {
     let votesCount = try votes.all().count
     let voter = try votes.all().map {user in user.id!.int}
     var json = JSON()
-    try json.set("id", id!.int)
+    try json.set("id", try assertExists())
     try json.set("description", description)
     try json.set("creatorId", userId)
     try json.set("votes", votesCount)

@@ -9,6 +9,7 @@ class TopicDispatcher {
     guard let list = try topicRepository.findAll() else {
       return nil
     }
+    
     return TopicListResponse(list: list)
   }
   
@@ -17,6 +18,7 @@ class TopicDispatcher {
     guard let topic = try topicRepository.save(Topic(description: req.description, userId: userId)) else {
       return nil
     }
+    
     try topic.votes.add(req.user)
     return CreateTopicResponse.fromEntity(topic: topic)
   }
@@ -26,9 +28,11 @@ class TopicDispatcher {
     if (topicList.count > 0) {
       return nil
     }
+    
     guard let topic = try getById(topicId: req.topicId) else {
       return nil
     }
+    
     try topic.votes.add(req.user)
     return VoteTopicResponse(topic: topic)
   }

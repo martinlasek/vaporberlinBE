@@ -6,7 +6,7 @@ final class Helper {
     if
       email.range(of: "@") == nil ||
       email.range(of: ".") == nil ||
-      email.characters.count < minLength
+      email.count < minLength
     {
       return false
     }
@@ -16,7 +16,7 @@ final class Helper {
   
   static func validatePassword(_ password: String) -> Bool {
     let minLength = 8
-    return password.characters.count >= minLength
+    return password.count >= minLength
   }
   
   static func errorJson(status: Int, message: String) throws -> JSON {
