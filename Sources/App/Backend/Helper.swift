@@ -1,12 +1,17 @@
 final class Helper {
   
   static func validateEmail(_ email: String) -> Bool {
-    /// email must at least look like a@b.cd
+    /// email must at least have 6 characters e.g: a@b.cd
     let minLength = 6
-    var valid = false
-    valid = email.range(of: "@") != nil
-    valid = email.characters.count >= minLength
-    return valid
+    if
+      email.range(of: "@") == nil ||
+      email.range(of: ".") == nil ||
+      email.characters.count < minLength
+    {
+      return false
+    }
+    
+    return true
   }
   
   static func validatePassword(_ password: String) -> Bool {
