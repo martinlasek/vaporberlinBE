@@ -3,20 +3,29 @@ import FluentProvider
 
 final class Meetup: Model {
   let storage = Storage()
-  var date: Date
+  var date: String
   var upcoming: Bool
   var title: String
+  var timeStart: String?
+  var timeEnd: String?
+  var link: String?
   
-  init(date: Date, upcoming: Bool, title: String) {
+  init(date: String, upcoming: Bool, title: String, timeStart: String? = nil, timeEnd: String? = nil, link: String? = nil) {
     self.date = date
     self.upcoming = upcoming
     self.title = title
+    self.timeStart = timeStart
+    self.timeEnd = timeEnd
+    self.link = link
   }
   
   init(row: Row) throws {
     date = try row.get("date")
     upcoming = try row.get("upcoming")
     title = try row.get("title")
+    timeStart = try row.get("timestart")
+    timeEnd = try row.get("timeend")
+    link = try row.get("link")
   }
   
   func makeRow() throws -> Row {
@@ -24,6 +33,9 @@ final class Meetup: Model {
     try row.set("date", date)
     try row.set("upcoming", upcoming)
     try row.set("title", title)
+    try row.set("timestart", timeStart)
+    try row.set("timeend", timeEnd)
+    try row.set("link", link)
     return row
   }
 }
@@ -45,15 +57,15 @@ extension Meetup: Preparation {
 
 // MARK: JSON
 
-/// How the model converts from / to JSON
-/// - creating a new Meetup (POST /meetup)
-/// - fetching a new Meetip (GET /meetup, GET /meetup/:id)
 extension Meetup: JSONConvertible {
   convenience init(json: JSON) throws {
     try self.init(
       date: json.get("date"),
       upcoming: json.get("upcoming"),
-      title: json.get("title")
+      title: json.get("title"),
+      timeStart: json.get("timeStart"),
+      timeEnd: json.get("timeEnd"),
+      link: json.get("link")
     )
   }
   
@@ -62,6 +74,9 @@ extension Meetup: JSONConvertible {
     try json.set("date", date)
     try json.set("upcoming", upcoming)
     try json.set("title", title)
+    try json.set("timeStart", timeStart)
+    try json.set("timeEnd", timeEnd)
+    try json.set("link", link)
     return json
   }
 }

@@ -10,7 +10,7 @@ final class User: Model {
   var lastname: String?
   var website: String?
   var company: String?
-  var isAdmin: Bool? = false
+  var isAdmin: Bool = false
   
   init(
     email: String,
@@ -19,7 +19,7 @@ final class User: Model {
     lastname: String? = nil,
     website: String? = nil,
     company: String? = nil,
-    isAdmin: Bool? = false
+    isAdmin: Bool = false
   ) {
     self.email = email
     self.password = password

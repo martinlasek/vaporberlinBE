@@ -7,8 +7,10 @@ extension Droplet {
     /// controllers
     let uc = UserController(drop: self)
     let tc = TopicController(drop: self)
+    let mc = MeetupController(drop: self)
     uc.setupRoutes()
     tc.setupRoutes()
+    mc.setupRoutes()
     
     /// index (vuejs)
     get("/") { req in
