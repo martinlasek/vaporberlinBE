@@ -5,21 +5,29 @@ final class Topic: Model {
   let storage = Storage()
   let description: String
   let userId: Int
+  let meetupId: Int?
+  let presenterId: Int?
   
-  init(description: String, userId: Int) {
+  init(description: String, userId: Int, meetupId: Int? = nil, presenterId: Int? = nil) {
     self.description = description
     self.userId = userId
+    self.meetupId = meetupId
+    self.presenterId = presenterId
   }
   
   init(row: Row) throws {
     description = try row.get("description")
     userId = try row.get(User.foreignIdKey)
+    meetupId = try row.get(Meetup.foreignIdKey)
+    presenterId = try row.get("presenter_id")
   }
   
   func makeRow() throws -> Row {
     var row = Row()
     try row.set("description", description)
     try row.set(User.foreignIdKey, userId)
+    try row.set(Meetup.foreignIdKey, meetupId)
+    try row.set("presenter_id", presenterId)
     return row
   }
 }
@@ -59,6 +67,7 @@ extension Topic: JSONConvertible {
     try json.set("creatorId", userId)
     try json.set("votes", votesCount)
     try json.set("voter", voter)
+    try json.set("presenterId", presenterId)
     return json
   }
 }

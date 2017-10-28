@@ -27,5 +27,10 @@ extension Config {
       preparations.append(Token.self)
       preparations.append(Topic.self)
       preparations.append(Pivot<User, Topic>.self)
+      
+      /// extra columns
+      preparations.append(UserExtraColumns.self)
+      preparations.append(TopicExtraColumn.self)
+      preparations.append(MeetupExtraColumns.self)
     }
 }

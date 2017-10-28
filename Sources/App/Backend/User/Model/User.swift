@@ -10,6 +10,7 @@ final class User: Model {
   var lastname: String?
   var website: String?
   var company: String?
+  var isAdmin: Bool? = false
   
   init(
     email: String,
@@ -17,7 +18,8 @@ final class User: Model {
     firstname: String? = nil,
     lastname: String? = nil,
     website: String? = nil,
-    company: String? = nil
+    company: String? = nil,
+    isAdmin: Bool? = false
   ) {
     self.email = email
     self.password = password
@@ -25,6 +27,7 @@ final class User: Model {
     self.lastname = lastname
     self.website = website
     self.company = company
+    self.isAdmin = isAdmin
   }
   
   init(row: Row) throws {
@@ -34,6 +37,7 @@ final class User: Model {
     lastname = try row.get("lastname")
     website = try row.get("website")
     company = try row.get("company")
+    isAdmin = try row.get("is_admin")
   }
   
   func makeRow() throws -> Row {
@@ -44,6 +48,7 @@ final class User: Model {
     try row.set("lastname", lastname)
     try row.set("website", website)
     try row.set("company", company)
+    try row.set("is_admin", isAdmin)
     return row
   }
 }
