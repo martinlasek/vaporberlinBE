@@ -4,4 +4,8 @@ final class MeetupRepository {
     try meetup.save()
     return meetup
   }
+  
+  func findAll() throws -> [Meetup]? {
+    return try Meetup.all()
+  }
 }

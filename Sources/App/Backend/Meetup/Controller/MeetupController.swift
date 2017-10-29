@@ -10,12 +10,18 @@ final class MeetupController {
   }
   
   func setupRoutes() {
+    
+    /// public
     let api = drop.grouped("api")
+    api.get("meetup", handler: list)
+    
+    // token
     let apiTokenMW = api.grouped([TokenAuthenticationMiddleware(User.self)])
     apiTokenMW.post("meetup", handler: create)
     apiTokenMW.post("meetup/topics", handler: assignTopics)
   }
   
+  /// create
   func create(_ req: Request) throws -> ResponseRepresentable {
     guard let json = req.json else {
       return try Helper.errorJson(status: 406, message: "no json provided")
@@ -38,6 +44,16 @@ final class MeetupController {
     return try res.makeJSON()
   }
   
+  /// list
+  func list(_ req: Request) throws -> ResponseRepresentable {
+    guard let res = try meetupDispatcher.getList(req: MeetupListRequest()) else {
+      return try Helper.errorJson(status: 406, message: "could not get list of meetups")
+    }
+    
+    return try res.makeJSON()
+  }
+  
+  /// assign topics
   func assignTopics(_ req: Request) throws -> ResponseRepresentable {
     guard let json = req.json else {
       return try Helper.errorJson(status: 406, message: "no json provided")

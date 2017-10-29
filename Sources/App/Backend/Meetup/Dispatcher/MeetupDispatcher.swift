@@ -27,4 +27,12 @@ final class MeetupDispatcher {
     
     return AssignTopicsResponse(topics: topics)
   }
+  
+  func getList(req: MeetupListRequest) throws -> MeetupListResponse? {
+    guard let meetups = try meetupRepository.findAll() else {
+      return nil
+    }
+    
+    return MeetupListResponse(list: meetups)
+  }
 }
