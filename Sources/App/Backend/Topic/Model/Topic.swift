@@ -5,8 +5,8 @@ final class Topic: Model {
   let storage = Storage()
   let description: String
   let userId: Int
-  let meetupId: Int?
-  let presenterId: Int?
+  var meetupId: Int?
+  var presenterId: Int?
   
   init(description: String, userId: Int, meetupId: Int? = nil, presenterId: Int? = nil) {
     self.description = description
@@ -68,6 +68,7 @@ extension Topic: JSONConvertible {
     try json.set("votes", votesCount)
     try json.set("voter", voter)
     try json.set("presenterId", presenterId)
+    try json.set("meetupId", meetupId)
     return json
   }
 }

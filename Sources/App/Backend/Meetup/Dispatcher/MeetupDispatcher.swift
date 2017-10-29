@@ -1,13 +1,30 @@
 final class MeetupDispatcher {
   let meetupRepository: MeetupRepository
+  let topicRepository: TopicRepository
   
   init() {
     self.meetupRepository = MeetupRepository()
+    self.topicRepository = TopicRepository()
   }
   
   func create(req: CreateMeetupRequest) throws -> CreateMeetupResponse? {
-    var meetup = Meetup(date: req.date, upcoming: req.upcoming, title: req.title)
-    meetup = try meetupRepository.save(meetup)
-    return CreateMeetupResponse.fromEntity(meetup)
+    let meetup = Meetup(date: req.date, upcoming: req.upcoming, title: req.title)
+    guard let m = try meetupRepository.save(meetup) else {
+      return nil
+    }
+    return CreateMeetupResponse.fromEntity(m)
+  }
+  
+  func assignTopics(req: AssignTopicsRequest) throws -> AssignTopicsResponse? {
+    guard let topics = try topicRepository.findBy(req.topicIds) else {
+      return nil
+    }
+    
+    for topic in topics {
+      topic.meetupId = req.meetupId
+      try topic.save()
+    }
+    
+    return AssignTopicsResponse(topics: topics)
   }
 }

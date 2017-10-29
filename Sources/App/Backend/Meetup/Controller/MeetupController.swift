@@ -13,6 +13,7 @@ final class MeetupController {
     let api = drop.grouped("api")
     let apiTokenMW = api.grouped([TokenAuthenticationMiddleware(User.self)])
     apiTokenMW.post("meetup", handler: create)
+    apiTokenMW.post("meetup/topics", handler: assignTopics)
   }
   
   func create(_ req: Request) throws -> ResponseRepresentable {
@@ -32,6 +33,32 @@ final class MeetupController {
     let req = CreateMeetupRequest(date: meetup.date, upcoming: meetup.upcoming, title: meetup.title)
     guard let res = try meetupDispatcher.create(req: req) else {
       return try Helper.errorJson(status: 406, message: "could not create meetup with 'json: \(json)'")
+    }
+    
+    return try res.makeJSON()
+  }
+  
+  func assignTopics(_ req: Request) throws -> ResponseRepresentable {
+    guard let json = req.json else {
+      return try Helper.errorJson(status: 406, message: "no json provided")
+    }
+    
+    guard let meetupId = json["meetup_id"]?.int else {
+      return try Helper.errorJson(status: 406, message: "missing meetup id with 'json: \(json)'")
+    }
+    
+    var topicIds: [Int]
+    do { topicIds = try json.get("topic_ids") as [Int] }
+    catch { return try Helper.errorJson(status: 406, message: "topic ids must be of type int in 'json: \(json)'") }
+    
+    let user = try req.auth.assertAuthenticated(User.self)
+    if (!user.isAdmin) {
+      return try Helper.errorJson(status: 401, message: "permission denied")
+    }
+    
+    let req = AssignTopicsRequest(meetupId: meetupId, topicIds: topicIds)
+    guard let res =  try meetupDispatcher.assignTopics(req: req) else {
+      return try Helper.errorJson(status: 406, message: "could not assign meetup to topics with 'json: \(json)'")
     }
     
     return try res.makeJSON()
