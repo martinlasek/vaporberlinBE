@@ -8,4 +8,8 @@ final class MeetupRepository {
   func findAll() throws -> [Meetup]? {
     return try Meetup.all()
   }
+  
+  func findUpcoming() throws -> Meetup? {
+    return try Meetup.makeQuery().filter("upcoming", true).first()
+  }
 }

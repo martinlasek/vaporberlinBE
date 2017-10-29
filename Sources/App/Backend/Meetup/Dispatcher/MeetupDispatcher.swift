@@ -35,4 +35,12 @@ final class MeetupDispatcher {
     
     return MeetupListResponse(list: meetups)
   }
+  
+  func getUpcoming(req: UpcomingMeetupRequest) throws -> UpcomingMeetupResponse? {
+    guard let upcomingMeetup = try meetupRepository.findUpcoming() else {
+      return nil
+    }
+    
+    return UpcomingMeetupResponse.fromEntity(upcomingMeetup)
+  }
 }

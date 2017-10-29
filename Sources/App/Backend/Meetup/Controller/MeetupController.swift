@@ -25,12 +25,12 @@ final class MeetupController {
   /// create
   func create(_ req: Request) throws -> ResponseRepresentable {
     guard let json = req.json else {
-      return try Helper.errorJson(status: 406, message: "no json provided")
+      return try Helper.errorJson(status: 400, message: "no json provided")
     }
     
     var meetup: Meetup
     do { meetup = try Meetup(json: json) }
-    catch { return try Helper.errorJson(status: 406, message: "could not create meetup with 'json: \(json)'") }
+    catch { return try Helper.errorJson(status: 400, message: "could not create meetup with 'json: \(json)'") }
     
     let user = try req.auth.assertAuthenticated(User.self)
     if (!user.isAdmin) {
@@ -39,7 +39,7 @@ final class MeetupController {
     
     let req = CreateMeetupRequest(date: meetup.date, upcoming: meetup.upcoming, title: meetup.title)
     guard let res = try meetupDispatcher.create(req: req) else {
-      return try Helper.errorJson(status: 406, message: "could not create meetup with 'json: \(json)'")
+      return try Helper.errorJson(status: 500, message: "could not create meetup with 'json: \(json)'")
     }
     
     return try res.makeJSON()
@@ -60,12 +60,12 @@ final class MeetupController {
       let json = req.json,
       let meetupId = json["meetup_id"]?.int
     else {
-      return try Helper.errorJson(status: 406, message: "missing json or specific json data")
+      return try Helper.errorJson(status: 400, message: "missing json or specific json data")
     }
     
     var topicIds: [Int]
     do { topicIds = try json.get("topic_ids") as [Int] }
-    catch { return try Helper.errorJson(status: 406, message: "topic ids must be of type int in 'json: \(json)'") }
+    catch { return try Helper.errorJson(status: 400, message: "topic ids must be of type int in 'json: \(json)'") }
     
     let user = try req.auth.assertAuthenticated(User.self)
     if (!user.isAdmin) {
@@ -81,6 +81,10 @@ final class MeetupController {
   }
   
   func getUpcomingMeetup(_ req: Request) throws -> ResponseRepresentable {
-    return ""
+    guard let res = try meetupDispatcher.getUpcoming(req: UpcomingMeetupRequest()) else {
+      return try Helper.errorJson(status: 406, message: "could not find an upcoming meetup")
+    }
+    
+    return try res.makeJSON()
   }
 }
