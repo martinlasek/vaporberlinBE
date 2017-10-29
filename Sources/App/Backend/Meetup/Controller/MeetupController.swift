@@ -14,6 +14,7 @@ final class MeetupController {
     /// public
     let api = drop.grouped("api")
     api.get("meetup", handler: list)
+    api.get("meetup/upcoming", handler: getUpcomingMeetup)
     
     // token
     let apiTokenMW = api.grouped([TokenAuthenticationMiddleware(User.self)])
@@ -55,12 +56,11 @@ final class MeetupController {
   
   /// assign topics
   func assignTopics(_ req: Request) throws -> ResponseRepresentable {
-    guard let json = req.json else {
-      return try Helper.errorJson(status: 406, message: "no json provided")
-    }
-    
-    guard let meetupId = json["meetup_id"]?.int else {
-      return try Helper.errorJson(status: 406, message: "missing meetup id with 'json: \(json)'")
+    guard
+      let json = req.json,
+      let meetupId = json["meetup_id"]?.int
+    else {
+      return try Helper.errorJson(status: 406, message: "missing json or specific json data")
     }
     
     var topicIds: [Int]
@@ -78,5 +78,9 @@ final class MeetupController {
     }
     
     return try res.makeJSON()
+  }
+  
+  func getUpcomingMeetup(_ req: Request) throws -> ResponseRepresentable {
+    return ""
   }
 }
