@@ -25,6 +25,7 @@ final class UserController {
     let apiTokenMW = api.grouped([TokenAuthenticationMiddleware(User.self)])
     apiTokenMW.get("user", handler: getUser)
     apiTokenMW.post("logout", handler: logout)
+    apiTokenMW.patch("user", handler: update)
   }
   
   /// create user out of a json request
@@ -81,6 +82,37 @@ final class UserController {
   /// return user by auth token
   func getUser(_ req: Request) throws -> ResponseRepresentable {
     let user = try req.auth.assertAuthenticated(User.self)
+    return try user.makeJSON()
+  }
+  
+  /// patch user
+  func update(_ req: Request) throws -> ResponseRepresentable {
+    guard let json = req.json else {
+      return try Helper.errorJson(status: 406, message: "no json provided")
+    }
+    
+    let user = try req.auth.assertAuthenticated(User.self)
+    user.firstname = json["firstname"]?.string ?? user.firstname
+    user.lastname = json["lastname"]?.string ?? user.lastname
+    user.website = json["website"]?.string ?? user.website
+    user.company = json["company"]?.string ?? user.company
+    
+    try user.save()
+    return try user.makeJSON()
+  }
+  
+  /// change email
+  func updateEmail(_ req: Request) throws -> ResponseRepresentable {
+    guard
+      let json = req.json,
+      let email = json["email"]?.string
+    else {
+      return try Helper.errorJson(status: 406, message: "no json or email provided")
+    }
+    
+    let user = try req.auth.assertAuthenticated(User.self)
+    user.email = email
+    try user.save()
     return try user.makeJSON()
   }
 }
