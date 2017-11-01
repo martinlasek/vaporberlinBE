@@ -26,6 +26,8 @@ final class UserController {
     apiTokenMW.get("user", handler: getUser)
     apiTokenMW.post("logout", handler: logout)
     apiTokenMW.patch("user", handler: update)
+    apiTokenMW.patch("user/email", handler: updateEmail)
+    apiTokenMW.delete("user", handler: delete)
   }
   
   /// create user out of a json request
@@ -110,10 +112,34 @@ final class UserController {
       return try Helper.errorJson(status: 406, message: "no json or email provided")
     }
     
+    if !Helper.validateEmail(email) {
+      return try Helper.errorJson(status: 406, message: "invalid email")
+    }
+    
     let user = try req.auth.assertAuthenticated(User.self)
     user.email = email
     try user.save()
     return try user.makeJSON()
+  }
+  
+  func delete(_ req: Request) throws -> ResponseRepresentable {
+    let user = try req.auth.assertAuthenticated(User.self)
+    
+    /// delete vote reference
+    try user.votes.delete()
+    
+    /// delete topic reference
+    for topic in try Topic.makeQuery().filter("user_id", user.id).all() {
+      try topic.delete()
+    }
+    
+    /// delete token reference
+    for token in try Token.makeQuery().filter("user_id", user.id).all() {
+      try token.delete()
+    }
+    
+    try user.delete()
+    return Response(status: .noContent)
   }
 }
 
