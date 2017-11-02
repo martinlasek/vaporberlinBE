@@ -125,19 +125,24 @@ final class UserController {
   func delete(_ req: Request) throws -> ResponseRepresentable {
     let user = try req.auth.assertAuthenticated(User.self)
     
-    /// delete vote reference
-    try user.votes.delete()
+    guard let db = User.database else {
+      return try Helper.errorJson(status: 500, message: "could not get database")
+    }
     
-    /// delete topic reference
+    /// delete votes (many to many)
+    try db.raw("DELETE FROM topic_user WHERE topic_user.user_id=\(user.id!.int!)")
+    
+    /// delete topic
     for topic in try Topic.makeQuery().filter("user_id", user.id).all() {
       try topic.delete()
     }
     
-    /// delete token reference
+    /// delete token
     for token in try Token.makeQuery().filter("user_id", user.id).all() {
       try token.delete()
     }
     
+    /// delete user
     try user.delete()
     return Response(status: .noContent)
   }
