@@ -49,7 +49,7 @@ final class UserController {
     }
     
     let userExists = try userDispatcher.checkEmailExists(EmailExistRequest(email: user.email))
-    if (userExists) {
+    if userExists {
       return try Helper.errorJson(status: 409, message: "user with email \(user.email) already exists")
     }
     
