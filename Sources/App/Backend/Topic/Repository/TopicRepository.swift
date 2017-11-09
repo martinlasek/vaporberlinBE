@@ -16,4 +16,8 @@ class TopicRepository {
   func findBy(_ ids: [Int]) throws -> [Topic]? {
     return try Topic.makeQuery().filter("id", in: ids).all()
   }
+  
+  func findAllByMeetupId(_ id: Int) throws -> [Topic]? {
+    return try Topic.makeQuery().filter("meetup_id", id).all()
+  }
 }

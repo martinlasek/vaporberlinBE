@@ -8,4 +8,8 @@ class UserRepository {
     try user.save()
     return user
   }
+  
+  func findAllBy(_ ids: [Int]) throws -> [User]? {
+    return try User.makeQuery().filter("id", in: ids).all()
+  }
 }

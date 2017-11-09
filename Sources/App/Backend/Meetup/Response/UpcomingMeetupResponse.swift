@@ -5,16 +5,18 @@ struct UpcomingMeetupResponse: JSONRepresentable {
   let timeStart: String?
   let timeEnd: String?
   let link: String?
+  let topics: [Topic]
+  let speakers: [String]
   
-  static func fromEntity(_ meetup: Meetup) -> UpcomingMeetupResponse {
-    return UpcomingMeetupResponse(
-      date: meetup.date,
-      upcoming: meetup.upcoming,
-      title: meetup.title,
-      timeStart: meetup.timeStart,
-      timeEnd: meetup.timeEnd,
-      link: meetup.link
-    )
+  init(_ meetup: Meetup, topics: [Topic], speakers: [String]) {
+    date = meetup.date
+    upcoming = meetup.upcoming
+    title = meetup.title
+    timeStart = meetup.timeStart
+    timeEnd = meetup.timeEnd
+    link = meetup.link
+    self.topics = topics
+    self.speakers = speakers
   }
   
   func makeJSON() throws -> JSON {
@@ -25,6 +27,8 @@ struct UpcomingMeetupResponse: JSONRepresentable {
     try json.set("timeStart", timeStart)
     try json.set("timeEnd", timeEnd)
     try json.set("link", link)
+    try json.set("topics", topics.makeJSON())
+    try json.set("speakers", speakers)
     return json
   }
 }

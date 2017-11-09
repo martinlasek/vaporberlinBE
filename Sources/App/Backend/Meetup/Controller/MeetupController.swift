@@ -82,7 +82,7 @@ final class MeetupController {
   
   func getUpcomingMeetup(_ req: Request) throws -> ResponseRepresentable {
     guard let res = try meetupDispatcher.getUpcoming(req: UpcomingMeetupRequest()) else {
-      return try Helper.errorJson(status: 406, message: "could not find an upcoming meetup")
+      return try Helper.errorJson(status: 404, message: "could not find an upcoming meetup")
     }
     
     return try res.makeJSON()

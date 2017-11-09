@@ -1,10 +1,12 @@
 final class MeetupDispatcher {
   let meetupRepository: MeetupRepository
   let topicRepository: TopicRepository
+  let userRepository: UserRepository
   
   init() {
     self.meetupRepository = MeetupRepository()
     self.topicRepository = TopicRepository()
+    self.userRepository = UserRepository()
   }
   
   func create(req: CreateMeetupRequest) throws -> CreateMeetupResponse? {
@@ -41,6 +43,15 @@ final class MeetupDispatcher {
       return nil
     }
     
-    return UpcomingMeetupResponse.fromEntity(upcomingMeetup)
+    guard let upcomingTopics = try topicRepository.findAllByMeetupId(upcomingMeetup.id!.int!) else {
+      return nil
+    }
+    
+    let topicsWithSpeaker = upcomingTopics.filter({ topic in topic.presenterId != nil})
+    guard let speakers = try userRepository.findAllBy(topicsWithSpeaker.map({topic in topic.presenterId!})) else {
+      return nil
+    }
+    
+    return UpcomingMeetupResponse(upcomingMeetup, topics: upcomingTopics, speakers: speakers.map({user in user.firstname ?? user.email}))
   }
 }
