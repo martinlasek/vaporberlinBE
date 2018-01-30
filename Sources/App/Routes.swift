@@ -14,7 +14,7 @@ extension Droplet {
     
     /// index (vuejs)
     get("/") { req in
-      return try self.view.make("index")
+      return try self.view.make("index.html")
     }
   }
 }

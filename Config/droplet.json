@@ -28,7 +28,7 @@
     "//": "The type of view renderer that drop.view will use",
     "//": "leaf: Pure Swift templating language created for Vapor.",
     "//": "static: Simply return the view at the supplied path",
-    "view": "leaf",
+    "view": "static",
 
     "//": "Choose which middleware are enabled (and in which order).",
     "//": "error: Catches errors thrown in your application and returns a nice response.",
